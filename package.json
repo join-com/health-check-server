@@ -1,6 +1,6 @@
 {
   "name": "@join-com/health-check-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "node http health check server",
   "main": "lib/index.js",
   "scripts": {
@@ -46,7 +46,5 @@
     "tslint-config-prettier": "^1.17.0",
     "typescript": "^3.2.1"
   },
-  "dependencies": {
-    "@join-com/shutdown": "^1.0.1"
-  }
+  "dependencies": {}
 }

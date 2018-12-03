@@ -1,9 +1,8 @@
-import { state } from '@join-com/shutdown';
 import * as http from 'http';
 
 interface Logger {
-  info: (msg: string) => void;
-  error: (error: Error) => void;
+  info: (message: string, payload?: any) => void;
+  error: (message: string, payload?: any) => void;
 }
 
 type PromiseFn = () => Promise<any>;
@@ -11,6 +10,10 @@ type PromiseFn = () => Promise<any>;
 interface Callbacks {
   health: PromiseFn;
   readiness: PromiseFn;
+}
+
+interface ShutdownState {
+  isShutdown: boolean;
 }
 
 const healthzHandler = (health: PromiseFn, response: http.ServerResponse) => {
@@ -25,6 +28,7 @@ const healthzHandler = (health: PromiseFn, response: http.ServerResponse) => {
 const readinessHandler = (
   readiness: PromiseFn,
   response: http.ServerResponse,
+  state: ShutdownState,
 ) => {
   if (state.isShutdown) {
     response.writeHead(500);
@@ -44,10 +48,11 @@ const notFoundHandler = (response: http.ServerResponse) => {
   response.end('not found');
 };
 
-const requestHandler = (health: PromiseFn, readiness: PromiseFn) => (
-  request: http.IncomingMessage,
-  response: http.ServerResponse,
-) => {
+const requestHandler = (
+  health: PromiseFn,
+  readiness: PromiseFn,
+  shutdownState: ShutdownState,
+) => (request: http.IncomingMessage, response: http.ServerResponse) => {
   if (request.method !== 'GET') {
     notFoundHandler(response);
   }
@@ -57,7 +62,7 @@ const requestHandler = (health: PromiseFn, readiness: PromiseFn) => (
       break;
 
     case '/readiness':
-      readinessHandler(readiness, response);
+      readinessHandler(readiness, response, shutdownState);
       break;
 
     default:
@@ -70,7 +75,7 @@ export const start = (server: http.Server, port: number, logger?: Logger) => {
   server.listen(port, (err: Error) => {
     if (err) {
       if (logger) {
-        logger.error(err);
+        logger.error('Can not start server', err);
       }
       return;
     }
@@ -81,8 +86,11 @@ export const start = (server: http.Server, port: number, logger?: Logger) => {
   });
 };
 
-export const createHealthServer = ({ health, readiness }: Callbacks) => {
-  return http.createServer(requestHandler(health, readiness));
+export const createHealthServer = (
+  { health, readiness }: Callbacks,
+  shutdownState: ShutdownState,
+) => {
+  return http.createServer(requestHandler(health, readiness, shutdownState));
 };
 
 export default createHealthServer;
