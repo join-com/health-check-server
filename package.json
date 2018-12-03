@@ -1,0 +1,52 @@
+{
+  "name": "@join-com/health-check-server",
+  "version": "1.0.0",
+  "description": "node http health check server",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "tslint -p .",
+    "prepublish": "tsc"
+  },
+  "lint-staged": {
+    "*.{ts,md}": [
+      "yarn prettier --write",
+      "git add"
+    ],
+    "src/**/*.ts": [
+      "npm run lint --fix",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsc --noEmit && lint-staged"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/join-com/health-check-server.git"
+  },
+  "keywords": [
+    "env",
+    "required"
+  ],
+  "author": "JOIN team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/join-com/health-check-server/issues"
+  },
+  "homepage": "https://github.com/join-com/health-check-server#readme",
+  "devDependencies": {
+    "@types/node": "^10.12.11",
+    "husky": "^1.2.0",
+    "lint-staged": "^8.1.0",
+    "prettier": "^1.15.3",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.17.0",
+    "typescript": "^3.2.1"
+  },
+  "dependencies": {
+    "@join-com/shutdown": "^1.0.1"
+  }
+}
