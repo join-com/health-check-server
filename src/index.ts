@@ -48,7 +48,7 @@ const notFoundHandler = (response: http.ServerResponse) => {
   response.end('not found');
 };
 
-const requestHandler = (
+export const createRequestHandler = (
   health: PromiseFn,
   readiness: PromiseFn,
   shutdownState: ShutdownState,
@@ -89,8 +89,6 @@ export const start = (server: http.Server, port: number, logger?: Logger) => {
 export const createHealthServer = (
   { health, readiness }: Callbacks,
   shutdownState: ShutdownState,
-) => {
-  return http.createServer(requestHandler(health, readiness, shutdownState));
-};
+) => http.createServer(createRequestHandler(health, readiness, shutdownState));
 
 export default createHealthServer;

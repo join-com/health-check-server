@@ -12,6 +12,11 @@ interface Callbacks {
 interface ShutdownState {
   isShutdown: boolean;
 }
+export declare const createRequestHandler: (
+  health: PromiseFn,
+  readiness: PromiseFn,
+  shutdownState: ShutdownState,
+) => (request: http.IncomingMessage, response: http.ServerResponse) => void;
 export declare const start: (
   server: http.Server,
   port: number,
